@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>مُحول الشفرات السرية</title>
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      background: linear-gradient(to right, #1f1c2c, #928dab);
+      color: #fff;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .name-banner {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border-bottom: 2px solid #fff;
+      margin-bottom: 30px;
+    }
+
+    .name-banner span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: moveText 10s linear infinite;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00f7ff;
+    }
+
+    @keyframes moveText {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      font-size: 1.2rem;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      border: none;
+      resize: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #6a11cb;
+      background-image: linear-gradient(315deg, #6a11cb 0%, #2575fc 74%);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+    }
+
+    #output {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      background-color: rgba(0,0,0,0.2);
+      padding: 20px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+    }
+
+    .follow-button {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="name-banner">
+    <span>IBRAHIM MUSTAFA</span>
+  </div>
+
+  <h1>🔐 مُحوّل الشفرات السرية</h1>
+
+  <textarea id="inputText" placeholder="اكتب النص العربي هنا..."></textarea><br>
+  <button onclick="encryptText()">🔒 تشفير</button>
+  <button onclick="decryptText()">🔓 فك التشفير</button>
+
+  <div id="output"></div>
+
+  <!-- زر التحويل للموقع الخاص -->
+  <div class="follow-button">
+    <a href="https://ibrahimmustafacv.github.io/my-social-media-page/" target="_blank">
+      <button>📎 تابعنا هنا</button>
+    </a>
+  </div>
+
+  <script>
+    const encryptionMap = {
+      "ا": "ض", "ب": "ظ", "ت": "غ", "ث": "ف",
+      "ج": "ق", "ح": "ث", "خ": "ص", "د": "س",
+      "ذ": "ش", "ر": "ي", "ز": "ه", "س": "ن",
+      "ش": "م", "ص": "ل", "ض": "ك", "ط": "ج",
+      "ظ": "ح", "ع": "د", "غ": "ة", "ف": "و",
+      "ق": "ز", "ك": "ر", "ل": "ذ", "م": "ط",
+      "ن": "أ", "ه": "ب", "و": "ت", "ي": "ث",
+      "ء": "ئ", "أ": "آ", "إ": "ؤ", "ى": "ا"
+    };
+
+    const decryptionMap = {};
+    for (const key in encryptionMap) {
+      decryptionMap[encryptionMap[key]] = key;
+    }
+
+    function encryptText() {
+      const text = document.getElementById("inputText").value;
+      let result = "";
+      for (let char of text) {
+        result += encryptionMap[char] || char;
+      }
+      document.getElementById("output").innerText = `🔐 الشفرة:\n${result}`;
+    }
+
+    function decryptText() {
+      const text = document.getElementById("inputText").value;
+      let result = "";
+      for (let char of text) {
+        result += decryptionMap[char] || char;
+      }
+      document.getElementById("output").innerText = `🔓 النص الأصلي:\n${result}`;
+    }
+  </script>
+
+</body>
+</html>
