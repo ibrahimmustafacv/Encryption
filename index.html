@@ -56,6 +56,15 @@
       resize: none;
     }
 
+    select {
+      font-size: 1.1rem;
+      padding: 8px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+
     button {
       padding: 10px 20px;
       font-size: 1rem;
@@ -80,6 +89,7 @@
       padding: 20px;
       border-radius: 10px;
       white-space: pre-wrap;
+      min-height: 120px;
     }
 
     .follow-button {
@@ -96,6 +106,14 @@
   <h1>🔐 مُحوّل الشفرات السرية</h1>
 
   <textarea id="inputText" placeholder="اكتب النص العربي هنا..."></textarea><br>
+
+  <select id="cipherType">
+    <option value="original">الشفرة الأصلية</option>
+    <option value="numbers">تشفير بالأرقام</option>
+    <option value="symbols">تشفير بالرموز</option>
+    <option value="english">تشفير بكلمات إنجليزية</option>
+  </select><br>
+
   <button onclick="encryptText()">🔒 تشفير</button>
   <button onclick="decryptText()">🔓 فك التشفير</button>
 
@@ -109,7 +127,8 @@
   </div>
 
   <script>
-    const encryptionMap = {
+    // الشفرة الأصلية: تعيين الحروف المشفرة
+    const encryptionMapOriginal = {
       "ا": "ض", "ب": "ظ", "ت": "غ", "ث": "ف",
       "ج": "ق", "ح": "ث", "خ": "ص", "د": "س",
       "ذ": "ش", "ر": "ي", "ز": "ه", "س": "ن",
@@ -119,28 +138,181 @@
       "ن": "أ", "ه": "ب", "و": "ت", "ي": "ث",
       "ء": "ئ", "أ": "آ", "إ": "ؤ", "ى": "ا"
     };
-
-    const decryptionMap = {};
-    for (const key in encryptionMap) {
-      decryptionMap[encryptionMap[key]] = key;
+    const decryptionMapOriginal = {};
+    for (const k in encryptionMapOriginal) {
+      decryptionMapOriginal[encryptionMapOriginal[k]] = k;
     }
 
-    function encryptText() {
-      const text = document.getElementById("inputText").value;
+    // تشفير بالأرقام: نحول كل حرف لرقم
+    const arabicChars = "ابتثجحخدذرزسشصضطظعغفقكلمنهويءأإى";
+    const encryptionMapNumbers = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapNumbers[arabicChars[i]] = (i+1).toString().padStart(2,'0');
+    }
+    const decryptionMapNumbers = {};
+    for (const k in encryptionMapNumbers) {
+      decryptionMapNumbers[encryptionMapNumbers[k]] = k;
+    }
+
+    // تشفير بالرموز: نحول كل حرف لرمز مختلف
+    const symbols = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", "\"", "'", "<", ">", ",", ".", "؟", "÷", "×", "~", "`"];
+    const encryptionMapSymbols = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapSymbols[arabicChars[i]] = symbols[i % symbols.length];
+    }
+    const decryptionMapSymbols = {};
+    for (const k in encryptionMapSymbols) {
+      decryptionMapSymbols[encryptionMapSymbols[k]] = k;
+    }
+
+    // تشفير بكلمات إنجليزية لكل حرف (اختياري بسيط)
+    const englishWords = [
+      "apple", "ball", "cat", "dog", "egg", "fish", "goat", "hat", "ice", "jam",
+      "key", "lamp", "man", "net", "owl", "pig", "queen", "rat", "sun", "top",
+      "up", "van", "win", "box", "yes", "zoo", "ace", "bee", "cow", "dig", "elf", "fox"
+    ];
+    // فقط نأخذ عدد الحروف الموجود في arabicChars
+    const encryptionMapEnglish = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapEnglish[arabicChars[i]] = englishWords[i % englishWords.length];
+    }
+    const decryptionMapEnglish = {};
+    for (const k in encryptionMapEnglish) {
+      decryptionMapEnglish[encryptionMapEnglish[k]] = k;
+    }
+
+    // دوال التشفير وفك التشفير لكل نوع
+    function encryptOriginal(text) {
       let result = "";
-      for (let char of text) {
-        result += encryptionMap[char] || char;
+      for (const char of text) {
+        result += encryptionMapOriginal[char] || char;
       }
-      document.getElementById("output").innerText = `🔐 الشفرة:\n${result}`;
+      return result;
+    }
+
+    function decryptOriginal(text) {
+      let result = "";
+      for (const char of text) {
+        result += decryptionMapOriginal[char] || char;
+      }
+      return result;
+    }
+
+    function encryptNumbers(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapNumbers[char] || char;
+      }
+      return result;
+    }
+
+    function decryptNumbers(text) {
+      let result = "";
+      // الأرقام عبارة عن أزواج أرقام (مثلاً 01، 02)
+      for (let i=0; i < text.length;) {
+        let pair = text.substr(i,2);
+        if (decryptionMapNumbers[pair]) {
+          result += decryptionMapNumbers[pair];
+          i += 2;
+        } else {
+          // إذا لم تكن أرقام، نأخذ الحرف كما هو
+          result += text[i];
+          i++;
+        }
+      }
+      return result;
+    }
+
+    function encryptSymbols(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapSymbols[char] || char;
+      }
+      return result;
+    }
+
+    function decryptSymbols(text) {
+      let result = "";
+      for (const char of text) {
+        result += decryptionMapSymbols[char] || char;
+      }
+      return result;
+    }
+
+    function encryptEnglish(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapEnglish[char] ? encryptionMapEnglish[char] + " " : char;
+      }
+      return result.trim();
+    }
+
+    function decryptEnglish(text) {
+      let words = text.split(/\s+/);
+      let result = "";
+      for (const w of words) {
+        result += decryptionMapEnglish[w] || w;
+      }
+      return result;
+    }
+
+    // الوظائف الرئيسية حسب الاختيار
+    function encryptText() {
+      const text = document.getElementById("inputText").value.trim();
+      const type = document.getElementById("cipherType").value;
+      let encrypted = "";
+      if (!text) {
+        alert("من فضلك اكتب نص للتشفير");
+        return;
+      }
+
+      switch(type) {
+        case "original":
+          encrypted = encryptOriginal(text);
+          break;
+        case "numbers":
+          encrypted = encryptNumbers(text);
+          break;
+        case "symbols":
+          encrypted = encryptSymbols(text);
+          break;
+        case "english":
+          encrypted = encryptEnglish(text);
+          break;
+        default:
+          encrypted = text;
+      }
+
+      document.getElementById("output").innerText = `🔐 الشفرة:\n${encrypted}`;
     }
 
     function decryptText() {
-      const text = document.getElementById("inputText").value;
-      let result = "";
-      for (let char of text) {
-        result += decryptionMap[char] || char;
+      const text = document.getElementById("inputText").value.trim();
+      const type = document.getElementById("cipherType").value;
+      let decrypted = "";
+      if (!text) {
+        alert("من فضلك اكتب نص لفك التشفير");
+        return;
       }
-      document.getElementById("output").innerText = `🔓 النص الأصلي:\n${result}`;
+
+      switch(type) {
+        case "original":
+          decrypted = decryptOriginal(text);
+          break;
+        case "numbers":
+          decrypted = decryptNumbers(text);
+          break;
+        case "symbols":
+          decrypted = decryptSymbols(text);
+          break;
+        case "english":
+          decrypted = decryptEnglish(text);
+          break;
+        default:
+          decrypted = text;
+      }
+
+      document.getElementById("output").innerText = `🔓 النص الأصلي:\n${decrypted}`;
     }
   </script>
 
