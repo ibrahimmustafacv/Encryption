@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مُحول الشفرات السرية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gradient-start: hsl(0, 0%, 0%);
+      --gradient-end: hsl(280, 30%, 8%);
+      --text-primary: hsl(0, 0%, 95%);
+      --text-secondary: hsl(0, 0%, 60%);
+      --accent-red: hsl(350, 89%, 60%);
+      --accent-purple: hsl(280, 70%, 50%);
+      --accent-gold: hsl(45, 90%, 60%);
+      --mystery-glow: hsl(350, 89%, 60%);
+      --shadow-red: hsla(350, 89%, 60%, 0.3);
+      --shadow-purple: hsla(280, 70%, 50%, 0.2);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      direction: rtl;
+      background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+      color: var(--text-primary);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 50%, var(--shadow-red) 0%, transparent 40%),
+        radial-gradient(circle at 80% 20%, var(--shadow-purple) 0%, transparent 35%),
+        radial-gradient(circle at 40% 80%, hsla(350, 89%, 60%, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 70% 70%, hsla(280, 70%, 50%, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+      animation: mysteryPulse 8s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><pattern id='hexagon' x='0' y='0' width='50' height='43.4' patternUnits='userSpaceOnUse'><polygon points='25,2 45,14 45,36 25,48 5,36 5,14' fill='none' stroke='%23ff4757' stroke-width='0.5' opacity='0.1'/></pattern></defs><rect width='100' height='100' fill='url(%23hexagon)'/></svg>") repeat;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .name-banner {
+      overflow: hidden;
+      white-space: nowrap;
+      box-sizing: border-box;
+      border-bottom: 2px solid var(--accent-red);
+      margin-bottom: 2rem;
+      padding: 1rem 0;
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .name-banner span {
+      display: inline-block;
+      padding-right: 100%;
+      animation: moveTextRTL 10s linear infinite;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-red);
+      text-shadow: 0 0 10px var(--shadow-red), 0 0 20px var(--shadow-red);
+      filter: drop-shadow(0 0 5px var(--mystery-glow));
+    }
+
+    .cipher-card {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--accent-red);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        0 0 20px var(--shadow-red),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      animation: slideInUp 0.8s ease-out;
+    }
+
+    .cipher-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 48%, var(--shadow-red) 50%, transparent 52%);
+      animation: mysteryShimmer 3s ease-in-out infinite;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    .success-message {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      animation: fadeIn 0.6s ease-out;
+      box-shadow: 0 0 15px var(--shadow-red);
+      background: rgba(255, 71, 87, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 71, 87, 0.5);
+      color: #fca5a5;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .cipher-select {
+      font-size: 1.1rem;
+      padding: 12px 16px;
+      border-radius: 15px;
+      border: 1px solid var(--accent-red);
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 0 10px var(--shadow-red);
+    }
+
+    .cipher-select:focus {
+      outline: none;
+      border-color: var(--accent-red);
+      box-shadow: 
+        0 0 0 3px var(--shadow-red),
+        0 0 20px var(--shadow-red);
+      transform: scale(1.01);
+    }
+
+    .cipher-input {
+      width: 100%;
+      height: 120px;
+      font-size: 1.1rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid var(--accent-red);
+      background: rgba(0, 0, 0, 0.7);
+      color: var(--text-primary);
+      resize: none;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        inset 0 2px 10px rgba(0, 0, 0, 0.3),
+        0 0 10px var(--shadow-red);
+    }
+
+    .cipher-input:focus {
+      outline: none;
+      border-color: var(--accent-red);
+      box-shadow: 
+        0 0 0 3px var(--shadow-red),
+        inset 0 2px 10px rgba(0, 0, 0, 0.3),
+        0 0 20px var(--shadow-red);
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.01);
+    }
+
+    .cipher-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .cipher-button {
+      padding: 14px 28px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 15px;
+      background: linear-gradient(135deg, var(--accent-red) 0%, var(--accent-purple) 100%);
+      color: white;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      font-weight: 600;
+      box-shadow: 
+        0 6px 20px var(--shadow-red),
+        0 0 30px var(--shadow-purple);
+      position: relative;
+      overflow: hidden;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .cipher-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.6s;
+    }
+
+    .cipher-button::after {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .cipher-button:hover::before {
+      left: 100%;
+    }
+
+    .cipher-button:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 10px 30px var(--shadow-red),
+        0 0 40px var(--shadow-purple),
+        0 0 60px var(--shadow-red);
+    }
+
+    .cipher-button:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+
+    .cipher-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .cipher-output {
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      padding: 1.5rem;
+      white-space: pre-wrap;
+      min-height: 120px;
+      font-size: 1.1rem;
+      border: 1px solid var(--accent-red);
+      line-height: 1.6;
+      font-family: 'Cairo', sans-serif;
+      box-shadow: 
+        inset 0 2px 10px rgba(0, 0, 0, 0.5),
+        0 0 15px var(--shadow-red);
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .cipher-output::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+      animation: scanLine 2s ease-in-out infinite;
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .cipher-type-label {
+      font-size: 0.75rem;
+      color: #93c5fd;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(15px);
+      border: 1px solid var(--accent-red);
+      border-radius: 15px;
+      padding: 1rem;
+      text-align: center;
+      transition: all 0.4s ease;
+      box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.3),
+        0 0 10px var(--shadow-red);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, var(--shadow-red), transparent);
+      transition: left 0.8s;
+    }
+
+    .stat-card:hover::before {
+      left: 100%;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 
+        0 8px 30px rgba(0, 0, 0, 0.4),
+        0 0 25px var(--shadow-red),
+        0 0 50px var(--shadow-purple);
+      border-color: var(--accent-purple);
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--accent-red);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px var(--shadow-red);
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pulse-animation {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 0.5rem;
+      }
+
+      .cipher-card {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .name-banner span {
+        font-size: 1.2rem;
+      }
+
+      .cipher-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        margin: 4px;
+        min-width: 120px;
+      }
+
+      .cipher-input {
+        height: 100px;
+        font-size: 1rem;
+        padding: 0.8rem;
+      }
+
+      .cipher-select {
+        font-size: 1rem;
+        padding: 10px 14px;
+      }
+
+      .cipher-output {
+        font-size: 1rem;
+        padding: 1rem;
+        min-height: 100px;
+      }
+
+      .button-group {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+      }
+
+      .stat-card {
+        padding: 0.8rem;
+      }
+
+      .stat-number {
+        font-size: 1.4rem;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .cipher-card {
+        padding: 1rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .cipher-button {
+        width: 100%;
+        max-width: 250px;
+      }
+    }
+
+    /* Animations */
+    @keyframes moveTextRTL {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    @keyframes mysteryPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    @keyframes mysteryShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes scanLine {
+      0% { transform: translateX(-100%); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateX(100%); opacity: 0; }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 5px var(--accent-red); }
+      50% { box-shadow: 0 0 20px var(--accent-red), 0 0 30px var(--accent-red); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideInUp {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <!-- Name Banner -->
+    <div class="name-banner">
+      <span>IBRAHIM MUSTAFA</span>
+    </div>
+
+    <!-- Main Card -->
+    <div class="cipher-card">
+      <!-- Title -->
+      <h1>🔐 مُحوّل الشفرات السرية</h1>
+
+      <!-- Success Message -->
+      <div id="successMessage" class="success-message hidden"></div>
+
+      <!-- Cipher Type Selection -->
+      <div class="form-group">
+        <label>نوع التشفير</label>
+        <select id="cipherType" class="cipher-select">
+          <option value="original">الشفرة الأصلية</option>
+          <option value="numbers">تشفير بالأرقام</option>
+          <option value="symbols">تشفير بالرموز</option>
+          <option value="english">تشفير بكلمات إنجليزية</option>
+        </select>
+      </div>
+
+      <!-- Input Section -->
+      <div class="form-group">
+        <label>النص المراد تشفيره أو فك تشفيره</label>
+        <textarea
+          id="messageInput"
+          class="cipher-input"
+          placeholder="اكتب النص العربي هنا..."
+        ></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-group">
+        <button id="encryptBtn" class="cipher-button">🔒 تشفير</button>
+        <button id="decryptBtn" class="cipher-button">🔓 فك التشفير</button>
+        <button id="clearBtn" class="cipher-button">🗑️ مسح</button>
+        <button id="copyBtn" class="cipher-button">📋 نسخ</button>
+      </div>
+
+      <!-- Output Section -->
+      <div class="form-group">
+        <div class="output-header">
+          <label>النتيجة</label>
+          <span id="cipherTypeLabel" class="cipher-type-label"></span>
+        </div>
+        <div id="output" class="cipher-output">في انتظار الإدخال...</div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div id="operationsCount" class="stat-number">0</div>
+          <div class="stat-label">العمليات المنجزة</div>
+        </div>
+        <div class="stat-card">
+          <div id="charactersProcessed" class="stat-number">0</div>
+          <div class="stat-label">الأحرف المعالجة</div>
+        </div>
+        <div class="stat-card">
+          <div id="currentChars" class="stat-number">0</div>
+          <div class="stat-label">أحرف النص الحالي</div>
+        </div>
+      </div>
+
+      <!-- Follow Button -->
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="https://ibrahimmustafacv.github.io/my-social-media-page/" target="_blank" rel="noopener noreferrer">
+          <button class="cipher-button">📎 تابعنا هنا</button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // الشفرة الأصلية: تعيين الحروف المشفرة
+    const encryptionMapOriginal = {
+      "ا": "ض", "ب": "ظ", "ت": "غ", "ث": "ف",
+      "ج": "ق", "ح": "ث", "خ": "ص", "د": "س",
+      "ذ": "ش", "ر": "ي", "ز": "ه", "س": "ن",
+      "ش": "م", "ص": "ل", "ض": "ك", "ط": "ج",
+      "ظ": "ح", "ع": "د", "غ": "ة", "ف": "و",
+      "ق": "ز", "ك": "ر", "ل": "ذ", "م": "ط",
+      "ن": "أ", "ه": "ب", "و": "ت", "ي": "ث",
+      "ء": "ئ", "أ": "آ", "إ": "ؤ", "ى": "ا"
+    };
+    const decryptionMapOriginal = {};
+    for (const k in encryptionMapOriginal) {
+      decryptionMapOriginal[encryptionMapOriginal[k]] = k;
+    }
+
+    // تشفير بالأرقام: نحول كل حرف لرقم
+    const arabicChars = "ابتثجحخدذرزسشصضطظعغفقكلمنهويءأإى";
+    const encryptionMapNumbers = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapNumbers[arabicChars[i]] = (i+1).toString().padStart(2,'0');
+    }
+    const decryptionMapNumbers = {};
+    for (const k in encryptionMapNumbers) {
+      decryptionMapNumbers[encryptionMapNumbers[k]] = k;
+    }
+
+    // تشفير بالرموز: نحول كل حرف لرمز مختلف
+    const symbols = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", "\"", "'", "<", ">", ",", ".", "؟", "÷", "×", "~", "`"];
+    const encryptionMapSymbols = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapSymbols[arabicChars[i]] = symbols[i % symbols.length];
+    }
+    const decryptionMapSymbols = {};
+    for (const k in encryptionMapSymbols) {
+      decryptionMapSymbols[encryptionMapSymbols[k]] = k;
+    }
+
+    // تشفير بكلمات إنجليزية لكل حرف
+    const englishWords = [
+      "apple", "ball", "cat", "dog", "egg", "fish", "goat", "hat", "ice", "jam",
+      "key", "lamp", "man", "net", "owl", "pig", "queen", "rat", "sun", "top",
+      "up", "van", "win", "box", "yes", "zoo", "ace", "bee", "cow", "dig", "elf", "fox"
+    ];
+    const encryptionMapEnglish = {};
+    for(let i=0; i<arabicChars.length; i++) {
+      encryptionMapEnglish[arabicChars[i]] = englishWords[i % englishWords.length];
+    }
+    const decryptionMapEnglish = {};
+    for (const k in encryptionMapEnglish) {
+      decryptionMapEnglish[encryptionMapEnglish[k]] = k;
+    }
+
+    // دوال التشفير وفك التشفير لكل نوع
+    function encryptOriginal(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapOriginal[char] || char;
+      }
+      return result;
+    }
+
+    function decryptOriginal(text) {
+      let result = "";
+      for (const char of text) {
+        result += decryptionMapOriginal[char] || char;
+      }
+      return result;
+    }
+
+    function encryptNumbers(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapNumbers[char] || char;
+      }
+      return result;
+    }
+
+    function decryptNumbers(text) {
+      let result = "";
+      for (let i=0; i < text.length;) {
+        let pair = text.substr(i,2);
+        if (decryptionMapNumbers[pair]) {
+          result += decryptionMapNumbers[pair];
+          i += 2;
+        } else {
+          result += text[i];
+          i++;
+        }
+      }
+      return result;
+    }
+
+    function encryptSymbols(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapSymbols[char] || char;
+      }
+      return result;
+    }
+
+    function decryptSymbols(text) {
+      let result = "";
+      for (const char of text) {
+        result += decryptionMapSymbols[char] || char;
+      }
+      return result;
+    }
+
+    function encryptEnglish(text) {
+      let result = "";
+      for (const char of text) {
+        result += encryptionMapEnglish[char] ? encryptionMapEnglish[char] + " " : char;
+      }
+      return result.trim();
+    }
+
+    function decryptEnglish(text) {
+      let words = text.split(/\s+/);
+      let result = "";
+      for (const w of words) {
+        result += decryptionMapEnglish[w] || w;
+      }
+      return result;
+    }
+
+    // State variables
+    let operationsCount = 0;
+    let charactersProcessed = 0;
+
+    // DOM elements
+    const messageInput = document.getElementById('messageInput');
+    const cipherType = document.getElementById('cipherType');
+    const output = document.getElementById('output');
+    const successMessage = document.getElementById('successMessage');
+    const cipherTypeLabel = document.getElementById('cipherTypeLabel');
+    const operationsCountEl = document.getElementById('operationsCount');
+    const charactersProcessedEl = document.getElementById('charactersProcessed');
+    const currentCharsEl = document.getElementById('currentChars');
+
+    // Helper functions
+    function showSuccessMessage(message) {
+      successMessage.textContent = message;
+      successMessage.classList.remove('hidden');
+      setTimeout(() => {
+        successMessage.classList.add('hidden');
+      }, 3000);
+    }
+
+    function updateStats(charCount) {
+      operationsCount++;
+      charactersProcessed += charCount;
+      operationsCountEl.textContent = operationsCount;
+      charactersProcessedEl.textContent = charactersProcessed;
+    }
+
+    function getCipherTypeName(type) {
+      const names = {
+        'original': 'الشفرة الأصلية',
+        'numbers': 'تشفير بالأرقام',
+        'symbols': 'تشفير بالرموز',
+        'english': 'تشفير بكلمات إنجليزية'
+      };
+      return names[type] || type;
+    }
+
+    function setProcessing(isProcessing) {
+      const buttons = document.querySelectorAll('.cipher-button');
+      buttons.forEach(btn => {
+        if (btn.id === 'encryptBtn' || btn.id === 'decryptBtn') {
+          btn.disabled = isProcessing;
+          if (isProcessing) {
+            btn.textContent = btn.id === 'encryptBtn' ? 'جاري التشفير...' : 'جاري فك التشفير...';
+          } else {
+            btn.textContent = btn.id === 'encryptBtn' ? '🔒 تشفير' : '🔓 فك التشفير';
+          }
+        }
+      });
+      messageInput.disabled = isProcessing;
+      if (isProcessing) {
+        output.classList.add('pulse-animation');
+        output.textContent = 'جاري المعالجة...';
+      } else {
+        output.classList.remove('pulse-animation');
+      }
+    }
+
+    // Main functions
+    function handleEncrypt() {
+      const text = messageInput.value.trim();
+      const type = cipherType.value;
+      
+      if (!text) {
+        alert("من فضلك اكتب نص للتشفير");
+        return;
+      }
+
+      setProcessing(true);
+      
+      setTimeout(() => {
+        let encrypted = "";
+        switch(type) {
+          case "original":
+            encrypted = encryptOriginal(text);
+            break;
+          case "numbers":
+            encrypted = encryptNumbers(text);
+            break;
+          case "symbols":
+            encrypted = encryptSymbols(text);
+            break;
+          case "english":
+            encrypted = encryptEnglish(text);
+            break;
+          default:
+            encrypted = text;
+        }
+
+        output.textContent = `🔐 الشفرة:\n${encrypted}`;
+        cipherTypeLabel.textContent = `النوع: ${getCipherTypeName(type)}`;
+        updateStats(text.length);
+        showSuccessMessage("تم التشفير بنجاح!");
+        setProcessing(false);
+      }, 500);
+    }
+
+    function handleDecrypt() {
+      const text = messageInput.value.trim();
+      const type = cipherType.value;
+      
+      if (!text) {
+        alert("من فضلك اكتب نص لفك التشفير");
+        return;
+      }
+
+      setProcessing(true);
+      
+      setTimeout(() => {
+        let decrypted = "";
+        switch(type) {
+          case "original":
+            decrypted = decryptOriginal(text);
+            break;
+          case "numbers":
+            decrypted = decryptNumbers(text);
+            break;
+          case "symbols":
+            decrypted = decryptSymbols(text);
+            break;
+          case "english":
+            decrypted = decryptEnglish(text);
+            break;
+          default:
+            decrypted = text;
+        }
+
+        output.textContent = `🔓 النص الأصلي:\n${decrypted}`;
+        cipherTypeLabel.textContent = `النوع: ${getCipherTypeName(type)}`;
+        updateStats(text.length);
+        showSuccessMessage("تم فك التشفير بنجاح!");
+        setProcessing(false);
+      }, 500);
+    }
+
+    function handleClear() {
+      messageInput.value = "";
+      output.textContent = "في انتظار الإدخال...";
+      cipherTypeLabel.textContent = "";
+      showSuccessMessage("تم مسح النص!");
+    }
+
+    async function handleCopy() {
+      if (!output.textContent || output.textContent === "في انتظار الإدخال..." || output.textContent === "جاري المعالجة...") {
+        alert("لا يوجد نص للنسخ");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(output.textContent);
+        showSuccessMessage("تم نسخ النص بنجاح!");
+      } catch (err) {
+        alert("فشل في نسخ النص");
+      }
+    }
+
+    // Event listeners
+    document.getElementById('encryptBtn').addEventListener('click', handleEncrypt);
+    document.getElementById('decryptBtn').addEventListener('click', handleDecrypt);
+    document.getElementById('clearBtn').addEventListener('click', handleClear);
+    document.getElementById('copyBtn').addEventListener('click', handleCopy);
+
+    // Update current characters count
+    messageInput.addEventListener('input', () => {
+      currentCharsEl.textContent = messageInput.value.length;
+    });
+
+    // Initialize
+    currentCharsEl.textContent = "0";
+  </script>
+</body>
+</html>
