@@ -19,6 +19,7 @@
       --mystery-glow: hsl(350, 89%, 60%);
       --shadow-red: hsla(350, 89%, 60%, 0.3);
       --shadow-purple: hsla(280, 70%, 50%, 0.2);
+      --danger-glow: hsl(0, 100%, 50%);
     }
 
     * {
@@ -395,6 +396,174 @@
       animation: pulse 2s ease-in-out infinite;
     }
 
+    /* قسم النسخة المتقدمة */
+    .vip-section {
+      margin-top: 3rem;
+      padding: 2rem;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(40, 0, 0, 0.9) 100%);
+      border-radius: 20px;
+      border: 2px solid var(--danger-glow);
+      box-shadow: 
+        0 0 30px var(--danger-glow),
+        inset 0 0 20px rgba(255, 0, 0, 0.2);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vip-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent 45%, var(--danger-glow) 50%, transparent 55%);
+      animation: vipShimmer 3s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0.3;
+    }
+
+    .vip-warning {
+      color: #ff6b6b;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(255, 0, 0, 0.1);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      animation: warningPulse 2s infinite;
+    }
+
+    .vip-title {
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 1rem;
+      text-shadow: 0 0 15px var(--accent-gold);
+    }
+
+    .vip-description {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .vip-button {
+      padding: 16px 32px;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, var(--danger-glow) 0%, #ff9900 100%);
+      border: none;
+      border-radius: 15px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.4s ease;
+      box-shadow: 
+        0 0 25px var(--danger-glow),
+        0 0 50px rgba(255, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      animation: vipButtonGlow 2s infinite alternate;
+    }
+
+    .vip-button:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 
+        0 0 40px var(--danger-glow),
+        0 0 80px rgba(255, 0, 0, 0.4);
+    }
+
+    /* مودال كلمة المرور */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, rgba(20, 0, 0, 0.95) 0%, rgba(40, 0, 0, 0.9) 100%);
+      padding: 2.5rem;
+      border-radius: 20px;
+      border: 2px solid var(--danger-glow);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 
+        0 0 50px var(--danger-glow),
+        inset 0 0 30px rgba(255, 0, 0, 0.2);
+      animation: modalSlideIn 0.5s ease-out;
+    }
+
+    .modal-title {
+      font-size: 1.8rem;
+      color: var(--accent-gold);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px var(--accent-gold);
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 1rem;
+      margin: 1rem 0;
+      background: rgba(0, 0, 0, 0.7);
+      border: 2px solid var(--danger-glow);
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      text-align: center;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .modal-input:focus {
+      outline: none;
+      box-shadow: 0 0 20px var(--danger-glow);
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .modal-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .modal-confirm {
+      background: linear-gradient(135deg, var(--danger-glow) 0%, #ff3300 100%);
+      color: white;
+    }
+
+    .modal-cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-error {
+      color: #ff6b6b;
+      margin-top: 1rem;
+      display: none;
+      animation: shake 0.5s ease;
+    }
+
     /* Mobile optimizations */
     @media (max-width: 768px) {
       .main-container {
@@ -459,6 +628,19 @@
       h1 {
         font-size: 2rem;
       }
+
+      .vip-section {
+        padding: 1.5rem;
+      }
+
+      .vip-title {
+        font-size: 1.5rem;
+      }
+
+      .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+      }
     }
 
     @media (max-width: 480px) {
@@ -473,6 +655,10 @@
       .cipher-button {
         width: 100%;
         max-width: 250px;
+      }
+
+      .modal-buttons {
+        flex-direction: column;
       }
     }
 
@@ -516,6 +702,32 @@
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
+    }
+
+    @keyframes vipShimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes vipButtonGlow {
+      0% { box-shadow: 0 0 25px var(--danger-glow), 0 0 50px rgba(255, 0, 0, 0.3); }
+      100% { box-shadow: 0 0 35px var(--danger-glow), 0 0 70px rgba(255, 0, 0, 0.5); }
+    }
+
+    @keyframes warningPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    @keyframes modalSlideIn {
+      from { transform: translateY(-50px) scale(0.9); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
 
     .hidden { display: none; }
@@ -595,6 +807,45 @@
         <a href="https://ibrahimmustafacv.github.io/my-social-media-page/" target="_blank" rel="noopener noreferrer">
           <button class="cipher-button">📎 تابعنا هنا</button>
         </a>
+      </div>
+    </div>
+
+    <!-- قسم النسخة المتقدمة -->
+    <div class="vip-section">
+      <div class="vip-warning">
+        ⚠️ ملاحظة: يجب طلب الباسورد الخاص بالموقع من المطور بسبب خطورته
+      </div>
+      <h2 class="vip-title">🚀 تجربة النسخة المتطورة VIP</h2>
+      <p class="vip-description">
+        نسخة أقوى وأكثر تطوراً من التشفير تحتوي على خوارزميات متقدمة وميزات حصرية.<br>
+        نظام تشفير عسكري مصمم للأمان القصوى والحماية المطلقة.
+      </p>
+      <button id="vipButton" class="vip-button">
+        🔐 الوصول إلى النسخة المتطورة
+      </button>
+    </div>
+  </div>
+
+  <!-- مودال كلمة المرور -->
+  <div id="passwordModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2 class="modal-title">🔒 التحقق من الهوية</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        الرجاء إدخال كلمة المرور الخاصة للوصول إلى النسخة المتطورة
+      </p>
+      <input 
+        type="password" 
+        id="passwordInput" 
+        class="modal-input" 
+        placeholder="أدخل كلمة المرور..."
+        autocomplete="off"
+      >
+      <div id="modalError" class="modal-error">
+        كلمة المرور غير صحيحة! الرجاء المحاولة مرة أخرى.
+      </div>
+      <div class="modal-buttons">
+        <button id="confirmPassword" class="modal-button modal-confirm">تأكيد</button>
+        <button id="cancelPassword" class="modal-button modal-cancel">إلغاء</button>
       </div>
     </div>
   </div>
@@ -739,6 +990,15 @@
     const operationsCountEl = document.getElementById('operationsCount');
     const charactersProcessedEl = document.getElementById('charactersProcessed');
     const currentCharsEl = document.getElementById('currentChars');
+    const vipButton = document.getElementById('vipButton');
+    const passwordModal = document.getElementById('passwordModal');
+    const passwordInput = document.getElementById('passwordInput');
+    const confirmPasswordBtn = document.getElementById('confirmPassword');
+    const cancelPasswordBtn = document.getElementById('cancelPassword');
+    const modalError = document.getElementById('modalError');
+
+    // كلمة المرور الصحيحة
+    const CORRECT_PASSWORD = "memo.48522844";
 
     // Helper functions
     function showSuccessMessage(message) {
@@ -885,11 +1145,69 @@
       }
     }
 
+    // وظائف النسخة المتطورة
+    function showPasswordModal() {
+      passwordModal.style.display = 'flex';
+      passwordInput.focus();
+      modalError.style.display = 'none';
+      passwordInput.value = '';
+    }
+
+    function hidePasswordModal() {
+      passwordModal.style.display = 'none';
+    }
+
+    function checkPassword() {
+      const enteredPassword = passwordInput.value.trim();
+      
+      if (enteredPassword === CORRECT_PASSWORD) {
+        hidePasswordModal();
+        showSuccessMessage("✅ تم التحقق بنجاح! جاري التوجيه إلى النسخة المتطورة...");
+        setTimeout(() => {
+          window.open("https://ibrahimmustafacv.github.io/Encryption.VIP/", "_blank");
+        }, 1000);
+      } else {
+        modalError.style.display = 'block';
+        passwordInput.value = '';
+        passwordInput.focus();
+        
+        // اهتزاز حقل الإدخال
+        passwordInput.style.animation = 'shake 0.5s ease';
+        setTimeout(() => {
+          passwordInput.style.animation = '';
+        }, 500);
+      }
+    }
+
     // Event listeners
     document.getElementById('encryptBtn').addEventListener('click', handleEncrypt);
     document.getElementById('decryptBtn').addEventListener('click', handleDecrypt);
     document.getElementById('clearBtn').addEventListener('click', handleClear);
     document.getElementById('copyBtn').addEventListener('click', handleCopy);
+    vipButton.addEventListener('click', showPasswordModal);
+    confirmPasswordBtn.addEventListener('click', checkPassword);
+    cancelPasswordBtn.addEventListener('click', hidePasswordModal);
+
+    // السماح بالضغط على Enter في حقل كلمة المرور
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+
+    // إغلاق المودال عند الضغط على ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && passwordModal.style.display === 'flex') {
+        hidePasswordModal();
+      }
+    });
+
+    // إغلاق المودال عند النقر خارج المحتوى
+    passwordModal.addEventListener('click', (e) => {
+      if (e.target === passwordModal) {
+        hidePasswordModal();
+      }
+    });
 
     // Update current characters count
     messageInput.addEventListener('input', () => {
